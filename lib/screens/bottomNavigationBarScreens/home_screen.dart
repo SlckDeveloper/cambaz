@@ -38,7 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       ),
-      body: RefreshIndicator(
+      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(),
+      itemCount: 20,),
+    );
+  }
+}
+
+/*
+RefreshIndicator(
         onRefresh: () async{
           //TODO: Buraya kullanıcı refresh ettiğinde yeni içeriklerin gelmesini, ekran arayüzünün
           //TODO: güncellenmsini sağlayan fonksiyonu yaz.
@@ -106,6 +113,4 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-    );
-  }
-}
+*/
