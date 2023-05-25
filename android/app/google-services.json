@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "752297614246",
+    "project_id": "cambaz-8213e",
+    "storage_bucket": "cambaz-8213e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752297614246:android:4b4219af4d8a2d137f0d67",
+        "android_client_info": {
+          "package_name": "dev.sarstech.cambaz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752297614246-gtpklgegl0uctqvfi4pkevfj52d1on0s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZwHFFts_77_6lYePZhxEVe4Dh6c-Znnc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752297614246-gtpklgegl0uctqvfi4pkevfj52d1on0s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

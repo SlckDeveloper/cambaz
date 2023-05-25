@@ -20,14 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double halfScreenWidth = screenWidth/2;
+   // final double screenWidth = MediaQuery.of(context).size.width;
+   // final double halfScreenWidth = screenWidth/2;
 
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: TextField(
-        cursorColor: Colors.lightBlueAccent,
+        cursorColor: const Color(0x1B4052FF),
         decoration: const InputDecoration(icon: Icon(Icons.search),
           focusColor: Colors.lightBlueAccent,
         hintText: " Ara...",
@@ -36,9 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onChanged: (value){
         },
       ),
-
       ),
-      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(),
+      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(searchTextController: searchTextController),
       itemCount: 20,),
     );
   }

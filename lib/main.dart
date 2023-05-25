@@ -1,9 +1,16 @@
+import 'package:cambaz/screens/authanticationScreens/signInScreen.dart';
 import 'package:cambaz/utilities/bottom_navigation_bar_screen_names.dart';
 import 'package:cambaz/utilities/fixed_colors.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
-void main() {
+Future<void> main() async {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []); //Ekranı fullscreen yapma
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -33,18 +40,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _page = 0;
   late PageController pageController;
+  User? user;
+  bool x = true;
 
   @override
   void initState() {
+    print("---------------------------------------MyHomePage initState çalıştı");
     super.initState();
     pageController = PageController();
+    print("---------------------------------------MyHomePage initState bitti");
   }
 
   @override
   void dispose() {
     super.dispose();
     pageController.dispose();
-
   }
 
   void navigationTapped(int value) {
@@ -59,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("---------------------------------------MyHomePage build çalıştı");
     return Scaffold(
       backgroundColor: Colors.cyan[900],
       body: PageView(
@@ -67,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: bottomNavigationBarScreenNames,
       ),
       bottomNavigationBar: CupertinoTabBar(
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: const Color(0x1B4052FF),
         items: [
           BottomNavigationBarItem(
             icon: Icon(
