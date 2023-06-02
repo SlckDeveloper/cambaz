@@ -1,5 +1,7 @@
+import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/widgets/bottomNavigationBarWidgets/animal_home_screen_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -10,6 +12,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchTextController = TextEditingController();
+  String resimUrl = "https://anadoluhayvancilik.com/wp-content/uploads/2022/11/inek-kac-yil-yasar-inegin-ortalama-omru-ne-kadardir.jpg";
+
+
 
   @override
   void dispose() {
@@ -22,11 +27,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
    // final double screenWidth = MediaQuery.of(context).size.width;
    // final double halfScreenWidth = screenWidth/2;
-
+  print("---------------------------------------------HomeScreen build çalıştı");
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: TextField(
+      backgroundColor: Colors.lightBlue[50],
+      appBar: AppBar(
+        actions: [IconButton(onPressed: () async{
+          await Provider.of<Auth>(context, listen: false).signOut();
+          print("--------------------------------------------------SignOut oldu???");
+        }, icon: const Icon(Icons.logout))],
+        title:
+      TextField(
         cursorColor: const Color(0x1B4052FF),
         decoration: const InputDecoration(icon: Icon(Icons.search),
           focusColor: Colors.lightBlueAccent,
@@ -37,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       ),
-      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(searchTextController: searchTextController),
+      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
       itemCount: 20,),
     );
   }

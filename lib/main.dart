@@ -1,30 +1,43 @@
-import 'package:cambaz/screens/authanticationScreens/signInScreen.dart';
+//import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
+import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/utilities/bottom_navigation_bar_screen_names.dart';
 import 'package:cambaz/utilities/fixed_colors.dart';
+import 'package:cambaz/widgets/on_board.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []); //Ekranı fullscreen yapma
+//  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: []); //Ekranı fullscreen yapma
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp( const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CAMBAZ',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+    return Provider<Auth>(
+      create: (context) {return Auth();},
+      child: MaterialApp(
+        title: 'CAMBAZ',
+        theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+        ),
+        home: const OnBoardWidget(),
       ),
-      home: const MyHomePage(title: 'CAMBAZ'),
     );
   }
 }
@@ -32,6 +45,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -45,10 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    print("---------------------------------------MyHomePage initState çalıştı");
     super.initState();
     pageController = PageController();
-    print("---------------------------------------MyHomePage initState bitti");
   }
 
   @override
