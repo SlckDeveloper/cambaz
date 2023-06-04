@@ -20,7 +20,7 @@ class _AnimalHomeScreenWidget extends State<AnimalHomeScreenWidget> {
       padding: const EdgeInsets.only(right: 14, bottom: 14, left: 14),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[400],
+          color: Colors.white,
           borderRadius: BorderRadius.circular(5),
           boxShadow: const [
             BoxShadow(

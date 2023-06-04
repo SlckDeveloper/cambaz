@@ -9,7 +9,7 @@ class SignInButton extends StatelessWidget {
     required this.onPressed, required this.buttonText
   });
    String buttonText;
-  Function() onPressed;
+  Function()? onPressed;
 
 
   @override
@@ -38,6 +38,7 @@ class SignInButton extends StatelessWidget {
         ),
         onPressed: onPressed,
         child:  Text(buttonText),
+
       ),
     );
   }
