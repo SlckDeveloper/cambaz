@@ -5,6 +5,7 @@ import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/widgets/sign_in_button.dart';
 
 import '../../services/form_validators.dart';
+import '../../utilities/snack_bar_messages.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -18,16 +19,19 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController tecPassword = TextEditingController();
   final _signInFormKey = GlobalKey<FormState>();
 
+
   //Butona tıklandığında butonun deaktif olması için, böylece birden fazla giriş yapılmasının önüne geçilir
   bool _isLoading = false;
+  bool _isLoadingEmailAndPasswordButton = false;
+  bool _isLoadingAnonymouslyButton = false;
+  bool _isLoadingGoogleButton = false;
 
-  Future<void> _signInAnonymously() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await Auth().signInAnonymously();
+
+  @override
+  void initState() {
+    Auth().googleSignOut();
+    super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -97,25 +101,43 @@ class _SignInScreenState extends State<SignInScreen> {
                         const SizedBox(
                           height: 15,
                         ),
-                        SignInButton(
-                          onPressed: _isLoading == true ? null : () async {
-                           if(_signInFormKey.currentState?.validate() == true ){
-                             print("++++++++++++++++++++++++++++++ form validate oldu");
-                            UserCredential? user = await Auth().signInWithEmailAndPassword(
-                                tecEmail.text, tecPassword.text);
-                             print("++++++++++++++++++++++++++++++ bağlantı sağlandı, user: $user");
-                            if(user?.user != null){
-                              if(!user!.user!.emailVerified){
-                                await _dialogBuilder(context);
-                            }
-                            }else{
-
-                            }
-
-                           }
-                          },
-                          buttonText: "Giriş Yap",
-                        ),
+                        _isLoadingEmailAndPasswordButton == true
+                            ? const CircularProgressIndicator(color: Colors.white70,)
+                            : SignInButton(
+                                onPressed: _isLoading == true
+                                    ? null
+                                    :  () async {
+                                  if (_signInFormKey.currentState?.validate() ==
+                                      true) {
+                                    setState(() {
+                                      _isLoading = true;
+                                      _isLoadingEmailAndPasswordButton = true;
+                                    });
+                                    try {
+                                      UserCredential? userCredential =
+                                          await Auth()
+                                              .signInWithEmailAndPassword(
+                                                  tecEmail.text,
+                                                  tecPassword.text);
+                                    } on FirebaseAuthException catch (e) {
+                                      if (e.code == 'user-not-found') {
+                                        SnackBarMessages().snackBar(context, "snackBar1");
+                                      } else if (e.code == 'wrong-password') {
+                                        SnackBarMessages().snackBar(context, "snackBar2");
+                                      }
+                                    } catch (e) {
+                                      SnackBarMessages().sncBar(e.toString());
+                                    }
+                                  }
+                                  await Future.delayed(
+                                      const Duration(seconds: 2));
+                                  setState(() {
+                                    _isLoading = false;
+                                    _isLoadingEmailAndPasswordButton = false;
+                                  });
+                                },
+                                buttonText: "Giriş Yap",
+                              ),
                       ],
                     ),
                   ),
@@ -125,16 +147,40 @@ class _SignInScreenState extends State<SignInScreen> {
                   SignInButton(
                     onPressed: _isLoading == true
                         ? null
-                        : () {
+                        : () async {
                             setState(() {
                               _isLoading = true;
+
                             });
+                            UserCredential? userCredential = await Auth().signInWithGoogle();
+                            if(userCredential == null){
+                              await Future.delayed(const Duration(seconds: 2));
+                              SnackBarMessages().snackBar(context, "snackBar3");
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
                           },
                     buttonText: "Google ile Gir",
                   ),
                   const Divider(height: 20),
-                  SignInButton(
-                    onPressed: _isLoading == true ? null : _signInAnonymously,
+                  _isLoadingAnonymouslyButton == true
+                      ? const CircularProgressIndicator(color: Colors.white70,)
+                      :  SignInButton(
+                    onPressed: _isLoading == true
+                        ? null
+                        :  () async {
+                            setState(() {
+                              _isLoading = true;
+                              _isLoadingAnonymouslyButton= true;
+                            });
+                            await Auth().signInAnonymously();
+                            await Future.delayed(const Duration(seconds: 2));
+                            setState(() {
+                              _isLoading = false;
+                              _isLoadingAnonymouslyButton = false;
+                            });
+                          },
                     buttonText: "Kayıt Olmadan Gir",
                   ),
                   const SizedBox(
@@ -144,12 +190,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                          onPressed: _isLoading == true
-                              ? null
-                              : () {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
+                          onPressed:() {
+
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -167,13 +209,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: 20,
                       ),
                       TextButton(
-                        onPressed: _isLoading == true
-                            ? null
-                            : () {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                              },
+                        onPressed: () { },
                         child: const Text(
                           "Şifremi Unuttum!",
                           style: TextStyle(
@@ -201,8 +237,8 @@ class _SignInScreenState extends State<SignInScreen> {
           title: const Text('Email adresinizi kontrol ediniz!'),
           content: const Text(
             'Lütfen email adresinizi onaylamak için\n'
-                'mail adresinize göndermiş olduğumuz\n'
-                'linke tıklayarak onaylama işlemini tamamlayınız.',
+            'mail adresinize göndermiş olduğumuz\n'
+            'linke tıklayarak onaylama işlemini tamamlayınız.',
           ),
           actions: <Widget>[
             /*TextButton(
@@ -228,5 +264,4 @@ class _SignInScreenState extends State<SignInScreen> {
       },
     );
   }
-
 }

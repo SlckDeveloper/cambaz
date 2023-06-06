@@ -30,7 +30,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     //TODO: (Slck) compileSdkVersion 28 veya daha büyük bir değer olmalı
    // compileSdkVersion flutter.compileSdkVersion
-    compileSdkVersion 31
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
