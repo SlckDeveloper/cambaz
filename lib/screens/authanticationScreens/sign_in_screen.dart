@@ -2,7 +2,7 @@ import 'package:cambaz/screens/authanticationScreens/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cambaz/services/auth.dart';
-import 'package:cambaz/widgets/sign_in_button.dart';
+import 'package:cambaz/widgets/sign_button.dart';
 
 import '../../services/form_validators.dart';
 import '../../utilities/snack_bar_messages.dart';
@@ -24,7 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _isLoading = false;
   bool _isLoadingEmailAndPasswordButton = false;
   bool _isLoadingAnonymouslyButton = false;
-  bool _isLoadingGoogleButton = false;
+  //bool _isLoadingGoogleButton = false;
 
 
   @override
@@ -41,14 +41,15 @@ class _SignInScreenState extends State<SignInScreen> {
           begin: Alignment.topLeft,
           end: Alignment(0.8, 1),
           colors: <Color>[
-            Color(0xff461e5c),
-            Color(0xff30418a),
-            Color(0xff0064b2),
-            Color(0xff0087cb),
-            Color(0xff00a8d3),
-            Color(0xff00c7cb),
-            Color(0xff00e5b7),
-            Color(0xff6eff9c),
+            //background: linear-gradient(90deg, #310091, #4811a0, #5c20b0, #702ebf, #843ccf, #974adf, #ab58ef, #bf66ff);
+            Color(0xff310091),
+            Color(0xff4811a0),
+            Color(0xff5c20b0),
+            Color(0xff702ebf),
+            Color(0xff843ccf),
+            Color(0xff974adf),
+            Color(0xffab58ef),
+            Color(0xffab58ef),
           ], // Gradient from https://learnui.design/tools/gradient-generator.html
           tileMode: TileMode.mirror,
         ),
@@ -67,7 +68,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Column(
                       children: [
                         TextFormField(
-                          autovalidateMode: AutovalidateMode.always,
                           validator: (value) {
                             return FormValidators().validateEmail(value);
                           },
@@ -103,7 +103,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         _isLoadingEmailAndPasswordButton == true
                             ? const CircularProgressIndicator(color: Colors.white70,)
-                            : SignInButton(
+                            : SignButton(
                                 onPressed: _isLoading == true
                                     ? null
                                     :  () async {
@@ -144,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(
                     height: 70,
                   ),
-                  SignInButton(
+                  SignButton(
                     onPressed: _isLoading == true
                         ? null
                         : () async {
@@ -152,21 +152,28 @@ class _SignInScreenState extends State<SignInScreen> {
                               _isLoading = true;
 
                             });
-                            UserCredential? userCredential = await Auth().signInWithGoogle();
-                            if(userCredential == null){
-                              await Future.delayed(const Duration(seconds: 2));
-                              SnackBarMessages().snackBar(context, "snackBar3");
+                            try {
+                              UserCredential? userCredential = await Auth()
+                                  .signInWithGoogle();
+                            }catch(e){
+                              await Future.delayed(
+                                  const Duration(seconds: 2));
+                              SnackBarMessages().snackBar(
+                                  context, "snackBar3");
                               setState(() {
                                 _isLoading = false;
                               });
                             }
+                            setState(() {
+                              _isLoading = false;
+                            });
                           },
                     buttonText: "Google ile Gir",
                   ),
                   const Divider(height: 20),
                   _isLoadingAnonymouslyButton == true
                       ? const CircularProgressIndicator(color: Colors.white70,)
-                      :  SignInButton(
+                      :  SignButton(
                     onPressed: _isLoading == true
                         ? null
                         :  () async {
@@ -174,8 +181,17 @@ class _SignInScreenState extends State<SignInScreen> {
                               _isLoading = true;
                               _isLoadingAnonymouslyButton= true;
                             });
-                            await Auth().signInAnonymously();
-                            await Future.delayed(const Duration(seconds: 2));
+                            try {
+                              await Auth().signInAnonymously();
+                            }catch(e) {
+                              await Future.delayed(const Duration(seconds: 2));
+                              SnackBarMessages().snackBar(
+                                  context, "snackBar3");
+                              setState(() {
+                                _isLoading = false;
+                                _isLoadingAnonymouslyButton = false;
+                              });
+                            }
                             setState(() {
                               _isLoading = false;
                               _isLoadingAnonymouslyButton = false;

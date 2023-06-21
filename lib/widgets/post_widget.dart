@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class AnimalHomeScreenWidget extends StatefulWidget {
-  const AnimalHomeScreenWidget(
+class PostWidget extends StatefulWidget {
+  const PostWidget(
       {Key? key, required this.searchTextController, required this.resimUrl})
       : super(key: key);
   final TextEditingController searchTextController;
   final String? resimUrl;
 
   @override
-  State<AnimalHomeScreenWidget> createState() => _AnimalHomeScreenWidget();
+  State<PostWidget> createState() => _AnimalHomeScreenWidget();
 }
 
-class _AnimalHomeScreenWidget extends State<AnimalHomeScreenWidget> {
+class _AnimalHomeScreenWidget extends State<PostWidget> {
   bool favorite = false;
 
   @override

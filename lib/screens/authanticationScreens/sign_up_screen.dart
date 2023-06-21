@@ -1,8 +1,12 @@
-import 'package:cambaz/widgets/sign_in_button.dart';
+import 'package:cambaz/main.dart';
+import 'package:cambaz/screens/on_board_screen.dart';
+import 'package:cambaz/widgets/sign_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';
 import '../../services/form_validators.dart';
+import '../../utilities/snack_bar_messages.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -16,7 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController tecPassword = TextEditingController();
   TextEditingController tecAdSoyad = TextEditingController();
   final _signUpFormKey = GlobalKey<FormState>();
-
+  bool _butonaBasildiMi= true;
 
 
   @override
@@ -27,14 +31,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           begin: Alignment.topLeft,
           end: Alignment(0.8, 1),
           colors: <Color>[
-            Color(0xff461e5c),
-            Color(0xff30418a),
-            Color(0xff0064b2),
-            Color(0xff0087cb),
-            Color(0xff00a8d3),
-            Color(0xff00c7cb),
-            Color(0xff00e5b7),
-            Color(0xff6eff9c),
+            //background: linear-gradient(90deg, #3d33ff, #0057ff, #0071ff, #0086ff, #0098ff, #00a9ff, #00b9ff, #38c7ff);
+
+            Color(0xff3d33ff),
+            Color(0xff0057ff),
+            Color(0xff0071ff),
+            Color(0xff0086ff),
+            Color(0xff0098ff),
+            Color(0xff00a9ff),
+            Color(0xff00b9ff),
+            Color(0xff38c7ff),
           ], // Gradient from https://learnui.design/tools/gradient-generator.html
           tileMode: TileMode.mirror,
         ),
@@ -43,104 +49,127 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: Colors.amber.withOpacity(0),
         body: Center(
           child: SingleChildScrollView(
-            child: Form(
-              key: _signUpFormKey,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 30, right: 30, top: 45),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(children: [
-                      const CircleAvatar(
-                        backgroundImage: AssetImage("assets/images/insanprofil.jpg"),
-                        //NetworkImage(
-                          //  "https://yt3.googleusercontent.com/ytc/AGIKgqM8zh66fZqGKeTkopHaU9GM4zvyuFnQhXThr37u=s900-c-k-c0x00ffffff-no-rj"),
-                        radius: 80,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 45),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(children: [
+                    const CircleAvatar(backgroundColor: Color(0xff38c7ff),
+                      radius: 80,
+                      child: Icon(Icons.person, size: 130, color: Color(0xff0071ff)),
+                    ),
+                    Positioned(
+                      right: 3,
+                      bottom: 15,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.add_a_photo, size: 40),
                       ),
-                      Positioned(
-                        right: 3,
-                        bottom: 15,
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.add_a_photo, size: 40),
+                    ),
+                  ]),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    "Profil resmi yükleyin",
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
+                  ),
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  Form(
+                    key: _signUpFormKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "İsim alanı boş bırakılamaz";
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: tecAdSoyad,
+                          decoration: InputDecoration(
+                            hintText: "     Ad  Soyad",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
                         ),
-                      ),
-                    ]),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      "Profil resmi yükleyin",
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13),
-                    ),
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "İsim alanı boş bırakılamaz";
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: tecAdSoyad,
-                      decoration: InputDecoration(
-                        hintText: "Ad Soyad",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                        const SizedBox(
+                          height: 8,
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (value) {
-                        return FormValidators().validateEmail(value);
-                      },
-                      keyboardType: TextInputType.emailAddress,
-                      controller: tecEmail,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.email),
-                        hintText: "e-mail",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                        TextFormField(
+                          validator: (value) {
+                            return FormValidators().validateEmail(value);
+                          },
+                          keyboardType: TextInputType.emailAddress,
+                          controller: tecEmail,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.email),
+                            hintText: "e-mail",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    TextFormField(
-                      validator: (value) {
-                        return FormValidators().validatePassword(value);
-                      },
-                      obscureText: true,
-                      controller: tecPassword,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock),
-                        hintText: "şifre",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
+                        const SizedBox(
+                          height: 8,
                         ),
-                      ),
+                        TextFormField(
+                          validator: (value) {
+                            return FormValidators().validatePassword(value);
+                          },
+                          obscureText: true,
+                          controller: tecPassword,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.lock),
+                            hintText: "şifre",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 35,
+                        ),
+                        _butonaBasildiMi == false ? const CircularProgressIndicator() : SignButton(
+                            onPressed: () async{
+                              _signUpFormKey.currentState?.validate();
+                              setState(() {
+                                _butonaBasildiMi = false;
+                              });
+
+                              try {
+                                await Auth().createWithEmailAndPassword(
+                                    tecEmail.text, tecPassword.text);
+                                FirebaseAuth.instance.authStateChanges().listen((
+                                    user) {
+                                  //TODO: Burada giriş kontrolleri daha detaylı yapılarak yönlendirme gerçekleştirilmeli
+                                  if (user != null) {
+                                    Navigator.push(context, MaterialPageRoute(builder:(context) => const OnBoardScreen()),);
+                                  }});
+                              }catch(e){
+                                await Future.delayed(
+                                    const Duration(seconds: 3));
+                                SnackBarMessages().snackBar(context, "snackBar3");
+                                setState(() {
+                                  _butonaBasildiMi = true;
+                                });
+                              }
+                            },
+                            buttonText: "Kaydol")
+                      ],
                     ),
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    SignInButton(
-                        onPressed: () async{
-                          _signUpFormKey.currentState?.validate();
-                          await Auth().createWithEmailAndPassword(tecEmail.text, tecPassword.text);
-                        },
-                        buttonText: "Kaydol")
-                  ],
-                ),
+                  ),
+
+
+                ],
               ),
             ),
           ),
@@ -150,5 +179,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-//TODO: Form uyarı metinleri kırmızı renkte olduğu için arka plan rengi ile karışıyor, düzeltilmesi gerek
-//TODO: Şifre kontrolündeki hata metni çok uzun olduğundan ekrana sığmıyor, düzeltilmesi gerek. Düzeltilemiyorsa uyarıyı bir uyarı ekranında kullanıcıya gösterebiriz.
+
+//TODO: Form validate olayının çözülmesi gerekiyor!!

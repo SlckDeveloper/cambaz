@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 ///KARŞILAMA EKRANI
 
 
-class OnBoardWidget extends StatefulWidget {
-  const OnBoardWidget({Key? key}) : super(key: key);
+class OnBoardScreen extends StatefulWidget {
+  const OnBoardScreen({Key? key}) : super(key: key);
 
   @override
-  State<OnBoardWidget> createState() => _OnBoardWidgetState();
+  State<OnBoardScreen> createState() => _OnBoardScreenState();
 }
 
-class _OnBoardWidgetState extends State<OnBoardWidget> {
+class _OnBoardScreenState extends State<OnBoardScreen> {
   bool? _girisYapildiMi;
 
 
@@ -21,8 +21,6 @@ class _OnBoardWidgetState extends State<OnBoardWidget> {
   void initState() {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if(user == null){
-        print("++++++++++++++++++++++++++++++++++user: $user");
-        print("++++++++++++++++++++++++++++++++++user: $_girisYapildiMi");
       _girisYapildiMi = false;
     }else{
         _girisYapildiMi = true;
@@ -36,9 +34,7 @@ class _OnBoardWidgetState extends State<OnBoardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("--------------------------------------------------OnBoard build çalıştı");
-    print("-------------------------------------------------- _girisYapidiMi: $_girisYapildiMi");
     return _girisYapildiMi == null ? const Center(child: CircularProgressIndicator()) : _girisYapildiMi!
-        ? const MyHomePage(title: "CAMBAZ") : const SignInScreen();
+        ? const MyHomePage() : const SignInScreen();
   }
 }

@@ -2,7 +2,7 @@
 import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/utilities/bottom_navigation_bar_screen_names.dart';
 import 'package:cambaz/utilities/fixed_colors.dart';
-import 'package:cambaz/widgets/on_board.dart';
+import 'package:cambaz/screens/on_board_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,16 +36,14 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           primarySwatch: Colors.blueGrey,
         ),
-        home: const OnBoardWidget(),
+        home: const OnBoardScreen(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -81,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("---------------------------------------MyHomePage build çalıştı");
     return Scaffold(
       backgroundColor: Colors.cyan[900],
       body: PageView(

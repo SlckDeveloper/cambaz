@@ -1,5 +1,5 @@
 import 'package:cambaz/services/auth.dart';
-import 'package:cambaz/widgets/bottomNavigationBarWidgets/animal_home_screen_widget.dart';
+import 'package:cambaz/widgets/post_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
    // final double screenWidth = MediaQuery.of(context).size.width;
    // final double halfScreenWidth = screenWidth/2;
-  print("---------------------------------------------HomeScreen build çalıştı");
+
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[50],
       appBar: AppBar(
         actions: [IconButton(onPressed: () async{
           await Provider.of<Auth>(context, listen: false).signOut();
-          print("--------------------------------------------------SignOut oldu???");
         }, icon: const Icon(Icons.logout))],
         title:
       TextField(
@@ -48,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       ),
-      body: ListView.builder(itemBuilder: (_, index) => AnimalHomeScreenWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
+      body: ListView.builder(itemBuilder: (_, index) => PostWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
       itemCount: 20,),
     );
   }

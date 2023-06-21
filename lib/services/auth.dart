@@ -28,6 +28,14 @@ class Auth{
     await GoogleSignIn().signOut();
   }
 
+  bool signOutControl(bool isSignOutAfterSignUp){
+    if(isSignOutAfterSignUp==true){
+      return true;
+    }else{
+    return false;
+    }
+  }
+
   Future<void> createWithEmailAndPassword(String email, String password) async {
     await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
   }
@@ -39,25 +47,18 @@ class Auth{
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      print(
-          "/////////////////////////////////////////////////signInWithGoogle metoduna girildi");
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      print(
-          "/////////////////////////////////////////////////googleUser: ${googleUser}");
+
       // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth = await googleUser
           ?.authentication;
 
-      print(
-          "/////////////////////////////////////////////////googleAuth: ${googleAuth}");
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      print(
-          "/////////////////////////////////////////////////credential: $credential");
 
       // Once signed in, return the UserCredential
       return await _firebaseAuth.signInWithCredential(credential);
