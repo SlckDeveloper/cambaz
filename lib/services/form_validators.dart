@@ -10,7 +10,14 @@ class FormValidators {
         r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
     final regex = RegExp(pattern);
 
-     if(value!.isNotEmpty && !regex.hasMatch(value)){return 'Geçerli bir email adresi giriniz!';}else{return null;}
+    if (value == null || value.isEmpty) {
+      return 'Lütfen bir mail adresi giriniz!';
+    } else if(!regex.hasMatch(value))
+     {
+       return 'Geçerli bir email adresi giriniz!';
+     }else{
+       return null;
+     }
   }
 
   String? validatePassword(String? value) {

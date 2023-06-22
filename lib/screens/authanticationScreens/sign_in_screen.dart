@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/widgets/sign_button.dart';
-
 import '../../services/form_validators.dart';
 import '../../utilities/snack_bar_messages.dart';
 
@@ -19,13 +18,10 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController tecPassword = TextEditingController();
   final _signInFormKey = GlobalKey<FormState>();
 
-
   //Butona tıklandığında butonun deaktif olması için, böylece birden fazla giriş yapılmasının önüne geçilir
   bool _isLoading = false;
   bool _isLoadingEmailAndPasswordButton = false;
   bool _isLoadingAnonymouslyButton = false;
-  //bool _isLoadingGoogleButton = false;
-
 
   @override
   void initState() {
@@ -102,40 +98,49 @@ class _SignInScreenState extends State<SignInScreen> {
                           height: 15,
                         ),
                         _isLoadingEmailAndPasswordButton == true
-                            ? const CircularProgressIndicator(color: Colors.white70,)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white70,
+                              )
                             : SignButton(
                                 onPressed: _isLoading == true
                                     ? null
-                                    :  () async {
-                                  if (_signInFormKey.currentState?.validate() ==
-                                      true) {
-                                    setState(() {
-                                      _isLoading = true;
-                                      _isLoadingEmailAndPasswordButton = true;
-                                    });
-                                    try {
-                                      UserCredential? userCredential =
-                                          await Auth()
-                                              .signInWithEmailAndPassword(
-                                                  tecEmail.text,
-                                                  tecPassword.text);
-                                    } on FirebaseAuthException catch (e) {
-                                      if (e.code == 'user-not-found') {
-                                        SnackBarMessages().snackBar(context, "snackBar1");
-                                      } else if (e.code == 'wrong-password') {
-                                        SnackBarMessages().snackBar(context, "snackBar2");
-                                      }
-                                    } catch (e) {
-                                      SnackBarMessages().sncBar(e.toString());
-                                    }
-                                  }
-                                  await Future.delayed(
-                                      const Duration(seconds: 2));
-                                  setState(() {
-                                    _isLoading = false;
-                                    _isLoadingEmailAndPasswordButton = false;
-                                  });
-                                },
+                                    : () async {
+                                        if (_signInFormKey.currentState
+                                                ?.validate() ==
+                                            true) {
+                                          setState(() {
+                                            _isLoading = true;
+                                            _isLoadingEmailAndPasswordButton =
+                                                true;
+                                          });
+                                          try {
+                                            UserCredential? userCredential =
+                                                await Auth()
+                                                    .signInWithEmailAndPassword(
+                                                        tecEmail.text,
+                                                        tecPassword.text);
+                                          } on FirebaseAuthException catch (e) {
+                                            if (e.code == 'user-not-found') {
+                                              SnackBarMessages().snackBar(
+                                                  context, "snackBar1");
+                                            } else if (e.code ==
+                                                'wrong-password') {
+                                              SnackBarMessages().snackBar(
+                                                  context, "snackBar2");
+                                            }
+                                          } catch (e) {
+                                            SnackBarMessages()
+                                                .sncBar(e.toString());
+                                          }
+                                        }
+                                        await Future.delayed(
+                                            const Duration(seconds: 2));
+                                        setState(() {
+                                          _isLoading = false;
+                                          _isLoadingEmailAndPasswordButton =
+                                              false;
+                                        });
+                                      },
                                 buttonText: "Giriş Yap",
                               ),
                       ],
@@ -150,16 +155,13 @@ class _SignInScreenState extends State<SignInScreen> {
                         : () async {
                             setState(() {
                               _isLoading = true;
-
                             });
                             try {
-                              UserCredential? userCredential = await Auth()
-                                  .signInWithGoogle();
-                            }catch(e){
-                              await Future.delayed(
-                                  const Duration(seconds: 2));
-                              SnackBarMessages().snackBar(
-                                  context, "snackBar3");
+                              UserCredential? userCredential =
+                                  await Auth().signInWithGoogle();
+                            } catch (e) {
+                              await Future.delayed(const Duration(seconds: 2));
+                              SnackBarMessages().snackBar(context, "snackBar3");
                               setState(() {
                                 _isLoading = false;
                               });
@@ -172,33 +174,36 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const Divider(height: 20),
                   _isLoadingAnonymouslyButton == true
-                      ? const CircularProgressIndicator(color: Colors.white70,)
-                      :  SignButton(
-                    onPressed: _isLoading == true
-                        ? null
-                        :  () async {
-                            setState(() {
-                              _isLoading = true;
-                              _isLoadingAnonymouslyButton= true;
-                            });
-                            try {
-                              await Auth().signInAnonymously();
-                            }catch(e) {
-                              await Future.delayed(const Duration(seconds: 2));
-                              SnackBarMessages().snackBar(
-                                  context, "snackBar3");
-                              setState(() {
-                                _isLoading = false;
-                                _isLoadingAnonymouslyButton = false;
-                              });
-                            }
-                            setState(() {
-                              _isLoading = false;
-                              _isLoadingAnonymouslyButton = false;
-                            });
-                          },
-                    buttonText: "Kayıt Olmadan Gir",
-                  ),
+                      ? const CircularProgressIndicator(
+                          color: Colors.white70,
+                        )
+                      : SignButton(
+                          onPressed: _isLoading == true
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    _isLoading = true;
+                                    _isLoadingAnonymouslyButton = true;
+                                  });
+                                  try {
+                                    await Auth().signInAnonymously();
+                                  } catch (e) {
+                                    await Future.delayed(
+                                        const Duration(seconds: 2));
+                                    SnackBarMessages()
+                                        .snackBar(context, "snackBar3");
+                                    setState(() {
+                                      _isLoading = false;
+                                      _isLoadingAnonymouslyButton = false;
+                                    });
+                                  }
+                                  setState(() {
+                                    _isLoading = false;
+                                    _isLoadingAnonymouslyButton = false;
+                                  });
+                                },
+                          buttonText: "Kayıt Olmadan Gir",
+                        ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -206,32 +211,31 @@ class _SignInScreenState extends State<SignInScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                          onPressed:() {
-
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SignUpScreen()));
-                                },
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignUpScreen()));
+                          },
                           child: const Text(
                             "Üye Ol",
                             style: TextStyle(
                                 color: Color(0xff1f005c),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                                fontSize: 17),
                           )),
                       const SizedBox(
                         width: 20,
                       ),
                       TextButton(
-                        onPressed: () { },
+                        onPressed: () {},
                         child: const Text(
                           "Şifremi Unuttum!",
                           style: TextStyle(
                               color: Color(0xff1f005c),
                               fontWeight: FontWeight.bold,
-                              fontSize: 15),
+                              fontSize: 17),
                         ),
                       ),
                     ],
@@ -281,3 +285,5 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
+
+//TODO: Şifremi unuttum sayfası düzenlenmeli!!!

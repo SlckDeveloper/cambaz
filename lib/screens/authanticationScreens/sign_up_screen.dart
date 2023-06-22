@@ -1,4 +1,5 @@
 import 'package:cambaz/main.dart';
+import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
 import 'package:cambaz/screens/on_board_screen.dart';
 import 'package:cambaz/widgets/sign_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -140,11 +141,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         _butonaBasildiMi == false ? const CircularProgressIndicator() : SignButton(
                             onPressed: () async{
-                              _signUpFormKey.currentState?.validate();
-                              setState(() {
-                                _butonaBasildiMi = false;
-                              });
-
+                              if(_signUpFormKey.currentState?.validate()==true) {
+                                setState(() {
+                                  _butonaBasildiMi = false;
+                                });
+                              }else{
+                                return null;
+                              }
                               try {
                                 await Auth().createWithEmailAndPassword(
                                     tecEmail.text, tecPassword.text);
@@ -163,11 +166,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 });
                               }
                             },
-                            buttonText: "Kaydol")
+                            buttonText: "Kaydol"),
                       ],
                     ),
                   ),
 
+                  SizedBox(height: 20,),
+                  TextButton(
+                      onPressed:() {
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const SignInScreen()));
+                      },
+                      child: const Text(
+                        "Giriş",
+                        style: TextStyle(
+                            color: Color(0xff1f005c),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17),
+                      )),
 
                 ],
               ),
