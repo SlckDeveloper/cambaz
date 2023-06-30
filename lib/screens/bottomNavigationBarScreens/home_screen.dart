@@ -1,5 +1,7 @@
+import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
 import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/widgets/post_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.lightBlue[50],
       appBar: AppBar(
+        backgroundColor: Color(0xff0098ff),
         actions: [IconButton(onPressed: () async{
           await Provider.of<Auth>(context, listen: false).signOut();
         }, icon: const Icon(Icons.logout))],
@@ -47,8 +50,23 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       ),
-      body: ListView.builder(itemBuilder: (_, index) => PostWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
-      itemCount: 20,),
+      body: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.active){
+            if(snapshot.hasData){
+              return PostWidget(searchTextController: searchTextController, resimUrl: resimUrl);
+              //TODO: PostWidget widgetına extra özellikler eklenebilir..
+            }else if(snapshot.hasError){
+              return Center(child: Text("${snapshot.error}"),);
+            }
+          }
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Center(child: CircularProgressIndicator(),);
+          }
+          return const SignInScreen();
+        },
+      ),
     );
   }
 }
@@ -123,3 +141,9 @@ RefreshIndicator(
         ),
       ),
 */
+
+
+/*
+body: ListView.builder(itemBuilder: (_, index) => PostWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
+      itemCount: 20,),
+ */

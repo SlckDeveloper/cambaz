@@ -1,9 +1,16 @@
+
+
+import 'dart:io';
+import 'dart:js_util';
+
 import 'package:cambaz/main.dart';
 import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
 import 'package:cambaz/screens/on_board_screen.dart';
 import 'package:cambaz/widgets/sign_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../services/auth.dart';
 import '../../services/form_validators.dart';
@@ -22,6 +29,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController tecAdSoyad = TextEditingController();
   final _signUpFormKey = GlobalKey<FormState>();
   bool _butonaBasildiMi= true;
+  XFile? profilResmi;
+
+  profilResmiYukle() async{
+    XFile? yuklenenResim = await ImagePicker().pickImage(source: ImageSource.camera);
+    var referansYol = FirebaseStorage.instance.ref().child("profilResimleri").child("${FirebaseAuth.instance.currentUser!.uid}.png");
+    UploadTask yuklemeIslemi = referansYol.putFile(yuklenenResim as File);
+  }
 
 
   @override
@@ -171,7 +185,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
 
-                  SizedBox(height: 20,),
+                  const SizedBox(height: 20,),
                   TextButton(
                       onPressed:() {
 
