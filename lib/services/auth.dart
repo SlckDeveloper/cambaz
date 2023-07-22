@@ -1,9 +1,17 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Auth{
   final _firebaseAuth = FirebaseAuth.instance;
+  final _fireStore = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
 
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -36,9 +44,28 @@ class Auth{
     }
   }
 
-  Future<void> createWithEmailAndPassword(String email, String password) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+  Future<void> createWithEmailAndPassword(String email, String password, String username, Uint8List? profilResmi) async {
+    UserCredential userCred = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+    print(userCred.user!.uid);
+    await  _fireStore.collection('users').doc(userCred.user!.uid).set({
+        "email": email,
+        "password": password,
+        "username": username,
+        "followers": [],
+        "following": [],
+        "userid": userCred.user!.uid,
+
+        //TODO: Eğer veritabanında (Cloud Firestore) kullanicilar adında bir koleksiyon varsa
+        //TODO: ve/veya userCred.user!.uid adında bir döküman varsa ve/veya set bilgileri varsa
+        //TODO: yeni bilgileri var olan alanın üzerine yazacaktır. Eğer ilgili alanlardan herhangi
+        //TODO: birisi veya hepsi yoksa olmayan alanları baştan oluşturacaktır.
+      });
+    if(profilResmi != null) {
+      _storage.ref().child("profilResimleri").child(userCred.user!.uid).child(
+          "profilResmi.png").putData(profilResmi);
+    }
   }
+
 
   Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
     final userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);

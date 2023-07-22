@@ -1,20 +1,14 @@
-
-
-import 'dart:io';
-import 'dart:js_util';
-
-import 'package:cambaz/main.dart';
+import 'dart:typed_data';
 import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
 import 'package:cambaz/screens/on_board_screen.dart';
 import 'package:cambaz/widgets/sign_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../services/auth.dart';
 import '../../services/form_validators.dart';
 import '../../utilities/snack_bar_messages.dart';
+import '../../utilities/utils.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -28,15 +22,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController tecPassword = TextEditingController();
   TextEditingController tecAdSoyad = TextEditingController();
   final _signUpFormKey = GlobalKey<FormState>();
-  bool _butonaBasildiMi= true;
-  XFile? profilResmi;
+  bool _butonaBasildiMi = true;
+  Uint8List? profilResmi;
 
-  profilResmiYukle() async{
+  profilResmiYukle() async {
+    Uint8List? profilePic = await pickImage(ImageSource.gallery);
+    setState(() {
+      profilResmi = profilePic;
+    });
+    //TODO: iOS için ilgili paketteki (pub.dev image_picker) ios->Runner->Info.plist dosyasındaki değişiklikleri uygulamalısın
+    /*
     XFile? yuklenenResim = await ImagePicker().pickImage(source: ImageSource.camera);
     var referansYol = FirebaseStorage.instance.ref().child("profilResimleri").child("${FirebaseAuth.instance.currentUser!.uid}.png");
     UploadTask yuklemeIslemi = referansYol.putFile(yuklenenResim as File);
+    */
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,15 +70,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Stack(children: [
-                    const CircleAvatar(backgroundColor: Color(0xff38c7ff),
-                      radius: 80,
-                      child: Icon(Icons.person, size: 130, color: Color(0xff0071ff)),
-                    ),
+                    profilResmi != null
+                        ? CircleAvatar(
+                            backgroundColor: const Color(0xff38c7ff),
+                            radius: 80,
+                            backgroundImage: MemoryImage(profilResmi!),
+                          )
+                        : const CircleAvatar(
+                            backgroundColor: Color(0xff38c7ff),
+                            radius: 80,
+                            child: Icon(Icons.person,
+                                size: 130, color: Color(0xff0071ff)),
+                          ),
                     Positioned(
                       right: 3,
                       bottom: 15,
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: profilResmiYukle,
                         icon: const Icon(Icons.add_a_photo, size: 40),
                       ),
                     ),
@@ -153,47 +161,61 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(
                           height: 35,
                         ),
-                        _butonaBasildiMi == false ? const CircularProgressIndicator() : SignButton(
-                            onPressed: () async{
-                              if(_signUpFormKey.currentState?.validate()==true) {
-                                setState(() {
-                                  _butonaBasildiMi = false;
-                                });
-                              }else{
-                                return null;
-                              }
-                              try {
-                                await Auth().createWithEmailAndPassword(
-                                    tecEmail.text, tecPassword.text);
-                                FirebaseAuth.instance.authStateChanges().listen((
-                                    user) {
-                                  //TODO: Burada giriş kontrolleri daha detaylı yapılarak yönlendirme gerçekleştirilmeli
-                                  if (user != null) {
-                                    Navigator.push(context, MaterialPageRoute(builder:(context) => const OnBoardScreen()),);
-                                  }});
-                              }catch(e){
-                                await Future.delayed(
-                                    const Duration(seconds: 3));
-                                SnackBarMessages().snackBar(context, "snackBar3");
-                                setState(() {
-                                  _butonaBasildiMi = true;
-                                });
-                              }
-                            },
-                            buttonText: "Kaydol"),
+                        _butonaBasildiMi == false
+                            ? const CircularProgressIndicator()
+                            : SignButton(
+                                onPressed: () async {
+                                  if (_signUpFormKey.currentState?.validate() ==
+                                      true) {
+                                    setState(() {
+                                      _butonaBasildiMi = false;
+                                    });
+                                  } else {
+                                    return null;
+                                  }
+                                  try {
+                                     Auth().createWithEmailAndPassword(
+                                        tecEmail.text,
+                                        tecPassword.text,
+                                        tecAdSoyad.text,
+                                        profilResmi
+                                     );
+                                    FirebaseAuth.instance
+                                        .authStateChanges()
+                                        .listen((user) {
+                                      //TODO: Burada giriş kontrolleri daha detaylı yapılarak yönlendirme gerçekleştirilmeli
+                                      if (user != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const OnBoardScreen()),
+                                        );
+                                      }
+                                    });
+                                  } catch (e) {
+                                    await Future.delayed(
+                                        const Duration(seconds: 3));
+                                    SnackBarMessages()
+                                        .snackBar(context, "snackBar3");
+                                    setState(() {
+                                      _butonaBasildiMi = true;
+                                    });
+                                  }
+                                },
+                                buttonText: "Kaydol"),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   TextButton(
-                      onPressed:() {
-
+                      onPressed: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                const SignInScreen()));
+                                builder: (context) => const SignInScreen()));
                       },
                       child: const Text(
                         "Giriş",
@@ -202,7 +224,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             fontWeight: FontWeight.bold,
                             fontSize: 17),
                       )),
-
                 ],
               ),
             ),
@@ -212,6 +233,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
 
 //TODO: Form validate olayının çözülmesi gerekiyor!!

@@ -35,9 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.lightBlue[50],
       appBar: AppBar(
         backgroundColor: Color(0xff0098ff),
-        actions: [IconButton(onPressed: () async{
+        actions: [
+          CircleAvatar(child: Image.network("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlT46ZbMj6P01O9fxbZ0ZuYZayCHjeSMyj4g&usqp=CAU"),),
+          IconButton(onPressed: () async{
           await Provider.of<Auth>(context, listen: false).signOut();
-        }, icon: const Icon(Icons.logout))],
+        }, icon: const Icon(Icons.logout)),],
         title:
       TextField(
         cursorColor: const Color(0x1B4052FF),
