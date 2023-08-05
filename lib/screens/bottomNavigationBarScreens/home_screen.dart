@@ -14,57 +14,80 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchTextController = TextEditingController();
-  String resimUrl = "https://anadoluhayvancilik.com/wp-content/uploads/2022/11/inek-kac-yil-yasar-inegin-ortalama-omru-ne-kadardir.jpg";
+  String resimUrl =
+      "https://anadoluhayvancilik.com/wp-content/uploads/2022/11/inek-kac-yil-yasar-inegin-ortalama-omru-ne-kadardir.jpg";
+  String? profilResmiUrl;
+  
+  Future<void> profilFotoAlma() async{
+    profilResmiUrl = await Auth().downloadProfilePic();
+    profilResmiUrl ??= "false";
+    setState(() {
+      profilResmiUrl;
+    });
+  }
 
-
+  @override
+  void initState() {
+    super.initState();
+    profilFotoAlma();
+  }
 
   @override
   void dispose() {
-        super.dispose();
-        searchTextController.dispose();
+    super.dispose();
+    searchTextController.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
-   // final double screenWidth = MediaQuery.of(context).size.width;
-   // final double halfScreenWidth = screenWidth/2;
-
+    // final double screenWidth = MediaQuery.of(context).size.width;
+    // final double halfScreenWidth = screenWidth/2;
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[50],
       appBar: AppBar(
-        backgroundColor: Color(0xff0098ff),
+        backgroundColor: const Color(0xff0098ff),
         actions: [
-          CircleAvatar(child: Image.network("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlT46ZbMj6P01O9fxbZ0ZuYZayCHjeSMyj4g&usqp=CAU"),),
-          IconButton(onPressed: () async{
-          await Provider.of<Auth>(context, listen: false).signOut();
-        }, icon: const Icon(Icons.logout)),],
-        title:
-      TextField(
-        cursorColor: const Color(0x1B4052FF),
-        decoration: const InputDecoration(icon: Icon(Icons.search),
-          focusColor: Colors.lightBlueAccent,
-        hintText: " Ara...",
-      ),
-        controller: searchTextController,
-        onChanged: (value){
-        },
-      ),
+          profilResmiUrl == "false" ?
+          const CircleAvatar(
+              backgroundImage:  AssetImage("assets/images/kediprofil.jpg")) : 
+              CircleAvatar(backgroundImage: NetworkImage(profilResmiUrl.toString()),),
+          IconButton(
+              onPressed: () async {
+                await Provider.of<Auth>(context, listen: false).signOut();
+              },
+              icon: const Icon(Icons.logout)),
+        ],
+        title: TextField(
+          cursorColor: const Color(0x1B4052FF),
+          decoration: const InputDecoration(
+            icon: Icon(Icons.search),
+            focusColor: Colors.lightBlueAccent,
+            hintText: " Ara...",
+          ),
+          controller: searchTextController,
+          onChanged: (value) {},
+        ),
       ),
       body: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.active){
-            if(snapshot.hasData){
-              return PostWidget(searchTextController: searchTextController, resimUrl: resimUrl);
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              return PostWidget(
+                  searchTextController: searchTextController,
+                  resimUrl: resimUrl);
               //TODO: PostWidget widgetına extra özellikler eklenebilir..
-            }else if(snapshot.hasError){
-              return Center(child: Text("${snapshot.error}"),);
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text("${snapshot.error}"),
+              );
             }
           }
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator(),);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
           return const SignInScreen();
         },
@@ -143,7 +166,6 @@ RefreshIndicator(
         ),
       ),
 */
-
 
 /*
 body: ListView.builder(itemBuilder: (_, index) => PostWidget(searchTextController: searchTextController, resimUrl: resimUrl,),

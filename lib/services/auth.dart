@@ -1,17 +1,15 @@
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
 
 class Auth{
   final _firebaseAuth = FirebaseAuth.instance;
   final _fireStore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
+  String? profilResmiUrl = "false";
 
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -46,7 +44,11 @@ class Auth{
 
   Future<void> createWithEmailAndPassword(String email, String password, String username, Uint8List? profilResmi) async {
     UserCredential userCred = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-    print(userCred.user!.uid);
+    if(profilResmi != null) {
+      final path = await _storage.ref().child("profilResimleri").child(userCred.user!.uid);
+      UploadTask uploadTask = path.putData(profilResmi);
+      profilResmiUrl = await (await uploadTask).ref.getDownloadURL();
+    }
     await  _fireStore.collection('users').doc(userCred.user!.uid).set({
         "email": email,
         "password": password,
@@ -54,16 +56,30 @@ class Auth{
         "followers": [],
         "following": [],
         "userid": userCred.user!.uid,
+        "profilResmiUrl": profilResmiUrl,
 
         //TODO: Eğer veritabanında (Cloud Firestore) kullanicilar adında bir koleksiyon varsa
         //TODO: ve/veya userCred.user!.uid adında bir döküman varsa ve/veya set bilgileri varsa
         //TODO: yeni bilgileri var olan alanın üzerine yazacaktır. Eğer ilgili alanlardan herhangi
         //TODO: birisi veya hepsi yoksa olmayan alanları baştan oluşturacaktır.
       });
-    if(profilResmi != null) {
-      _storage.ref().child("profilResimleri").child(userCred.user!.uid).child(
-          "profilResmi.png").putData(profilResmi);
+  }
+
+
+  Future<String?> downloadProfilePic() async{
+    print("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+    User? user = _firebaseAuth.currentUser;
+    print("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+    if(user != null) {
+      print("33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333");
+      final ref = _fireStore.collection('users').doc(user.uid);
+      print("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444 ref:"+ref.toString());
+      DocumentSnapshot kullaniciVerileriMap = await ref.get();
+      print("55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555 KullanıcıVerileriMap:" + kullaniciVerileriMap.toString());
+      print("66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666 KullanıcıVerileriMAp['profilResmiURl'] :" +kullaniciVerileriMap["profilResmiUrl"].toString());
+      return kullaniciVerileriMap["profilResmiUrl"].toString();
     }
+    return null;
   }
 
 

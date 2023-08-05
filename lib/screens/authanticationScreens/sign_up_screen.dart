@@ -174,7 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     return null;
                                   }
                                   try {
-                                     Auth().createWithEmailAndPassword(
+                                    await Auth().createWithEmailAndPassword(
                                         tecEmail.text,
                                         tecPassword.text,
                                         tecAdSoyad.text,
