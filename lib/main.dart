@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: bottomNavigationBarScreenNames,
       ),
       bottomNavigationBar: CupertinoTabBar(
-        backgroundColor: const Color(0x1B4052FF),
+        backgroundColor: Colors.teal,
         items: [
           BottomNavigationBarItem(
             icon: Icon(

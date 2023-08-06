@@ -17,10 +17,10 @@ class _AnimalHomeScreenWidget extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 14, bottom: 14, left: 14),
+      padding: const EdgeInsets.only( bottom: 14),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.teal.shade50,
           borderRadius: BorderRadius.circular(5),
           boxShadow: const [
             BoxShadow(

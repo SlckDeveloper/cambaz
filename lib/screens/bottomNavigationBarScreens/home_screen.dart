@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cambaz/screens/authanticationScreens/sign_in_screen.dart';
 import 'package:cambaz/services/auth.dart';
 import 'package:cambaz/widgets/post_widget.dart';
@@ -16,10 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchTextController = TextEditingController();
   String resimUrl =
       "https://anadoluhayvancilik.com/wp-content/uploads/2022/11/inek-kac-yil-yasar-inegin-ortalama-omru-ne-kadardir.jpg";
-  String? profilResmiUrl;
+  String? profilResmiUrl ="false";
   
-  Future<void> profilFotoAlma() async{
+  Future<void> profilFotoAlma() async{ ///Altta Açıklama-1'e bak!
     profilResmiUrl = await Auth().downloadProfilePic();
+    if(profilResmiUrl != null){
+      CachedNetworkImage(imageUrl: profilResmiUrl!);
+    }
     profilResmiUrl ??= "false";
     setState(() {
       profilResmiUrl;
@@ -44,17 +48,18 @@ class _HomeScreenState extends State<HomeScreen> {
     // final double halfScreenWidth = screenWidth/2;
 
     return Scaffold(
-      backgroundColor: Colors.lightBlue[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xff0098ff),
+        backgroundColor: Colors.teal,
         actions: [
           profilResmiUrl == "false" ?
           const CircleAvatar(
-              backgroundImage:  AssetImage("assets/images/kediprofil.jpg")) : 
-              CircleAvatar(backgroundImage: NetworkImage(profilResmiUrl.toString()),),
+              child: Icon(Icons.person,color: Colors.teal,))
+              : CircleAvatar(backgroundImage: CachedNetworkImageProvider(profilResmiUrl!)), ///Altta Açıklama-1'e bak!
+
           IconButton(
               onPressed: () async {
-                await Provider.of<Auth>(context, listen: false).signOut();
+                await Provider.of<Auth>(context, listen: false).signOut(); //Sürekli dinleme olayı yok(listen: false), sadece butona basıldığında tetiklensin!!!!!
               },
               icon: const Icon(Icons.logout)),
         ],
@@ -171,3 +176,17 @@ RefreshIndicator(
 body: ListView.builder(itemBuilder: (_, index) => PostWidget(searchTextController: searchTextController, resimUrl: resimUrl,),
       itemCount: 20,),
  */
+
+
+
+///Açıklama-1
+//Ekran açıldığında ilk önce profil fotosuna ait url'nin alınması gerekiyor. Daha önce bu işlemi initState() fonksiyonu
+//içerisinde yapmak istemiştim fakat initState(), içerisinde await anahtar kelimesini barındıran async bir fonksiyon
+//olamıyormuş!!! Bü yüzden ben de bu async fonksiyonu başka bir alana yazdım ve initState() içerisinde çağırdım.
+//  profilFotoAlma() isimli bu fonksiyon içerisinde CachedNetworkImage paketini kullanarak,
+//bir kere indirdiğimiz resmi önbelleğe kaydediyoruz. Daha sonra kullanmak istediğimizde AppBar'ın actions[] listesinde
+//yer alan CircleAvatar widgetı içerisinde CachedNetworkImageProvider(profilResmiUrl!) şeklinde kullanabiliyoruz.
+//Böylece her sayfa yenilendiğinde resmi tekrar tekrar indirmemiz gerekmiyor. Burada profilResmiUrl değişkeni her sayfa
+//yenilendiğinde kısa bir süre null değer alıyprdu ve ekranda kırmızı uyarı beliriyordu. Bunu önlemek için değişkenin
+//tanımlandığı yerde default olarak String bir değer ataması yapılmıştır.
+//
